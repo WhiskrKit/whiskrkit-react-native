@@ -5,8 +5,12 @@ require Pod::Executable.execute_command('node', ['-p',
     {paths: [process.argv[1]]},
   )', __dir__]).strip
 
-platform :ios, min_ios_version_supported
+# WhiskrKit requires iOS 17.
+platform :ios, '17.0'
 prepare_react_native_project!
+
+# Resolves the WhiskrKit Swift package for the WhiskrkitReactNative pod.
+plugin 'cocoapods-spm'
 
 linkage = ENV['USE_FRAMEWORKS']
 if linkage != nil
@@ -15,6 +19,12 @@ if linkage != nil
 end
 
 target 'WhiskrkitExample' do
+  # The WhiskrKit Swift package. 0.1.9 is the first release carrying the UIKit
+  # attach(to:) API this wrapper needs.
+  spm_pkg "WhiskrKit",
+          :url => "https://github.com/whiskrkit/whiskrkit-swift.git",
+          :version => "0.1.9"
+
   config = use_native_modules!
 
   use_react_native!(

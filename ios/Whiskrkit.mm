@@ -1,10 +1,18 @@
 #import "Whiskrkit.h"
+#import "WhiskrkitReactNative-Swift.h"
 
 @implementation Whiskrkit
-- (NSNumber *)multiply:(double)a b:(double)b {
-    NSNumber *result = @(a * b);
 
-    return result;
+- (void)initialize:(NSString *)apiKey withMockedSurveys:(BOOL)withMockedSurveys {
+    [WhiskrKitBridge initializeWithApiKey:apiKey withMockedSurveys:withMockedSurveys];
+}
+
+- (void)present:(NSString *)surveyId {
+    [WhiskrKitBridge presentWithSurveyId:surveyId];
+}
+
+- (void)checkAndPresent:(NSString *)surveyId {
+    [WhiskrKitBridge checkAndPresentWithSurveyId:surveyId];
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:

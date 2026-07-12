@@ -42,18 +42,24 @@
   "keywords": [
     "react-native",
     "ios",
-    "android"
+    "android",
+    "whiskrkit",
+    "survey",
+    "in-app-survey",
+    "feedback",
+    "nps",
+    "turbo-module"
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/whiskrkit/react-native-whiskrkit.git"
+    "url": "git+https://github.com/WhiskrKit/whiskrkit-react-native.git"
   },
   "author": "Dennis Vermeulen <d.vermeulen@me.com> (https://whiskrkit.eu)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/whiskrkit/react-native-whiskrkit/issues"
+    "url": "https://github.com/WhiskrKit/whiskrkit-react-native/issues"
   },
-  "homepage": "https://github.com/whiskrkit/react-native-whiskrkit#readme",
+  "homepage": "https://github.com/WhiskrKit/whiskrkit-react-native#readme",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },
@@ -126,7 +132,7 @@
       "customExportConditions": [
         "require",
         "react-native",
-        "<%- project.sourceCondition -%>"
+        "react-native-whiskrkit-source"
       ]
     },
     "modulePathIgnorePatterns": [

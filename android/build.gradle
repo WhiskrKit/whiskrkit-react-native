@@ -1,7 +1,11 @@
 buildscript {
   ext.Whiskrkit = [
-    kotlinVersion: "2.0.21",
-    minSdkVersion: 24,
+    // Fallback only (the consuming app's rootProject ext takes precedence).
+    // whiskrkit-android 0.1.1 is built for Kotlin 2.1, so RN's default Kotlin
+    // reads it fine — no consumer bump required.
+    kotlinVersion: "2.1.20",
+    // The WhiskrKit Android SDK requires minSdk 26.
+    minSdkVersion: 26,
     compileSdkVersion: 36
   ]
 
@@ -22,12 +26,15 @@ buildscript {
     classpath "com.android.tools.build:gradle:8.7.2"
     // noinspection DifferentKotlinGradleVersion
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${getExtOrDefault('kotlinVersion')}"
+    // Compose compiler, needed to host the WhiskrKitHost composable.
+    classpath "org.jetbrains.kotlin:compose-compiler-gradle-plugin:${getExtOrDefault('kotlinVersion')}"
   }
 }
 
 
 apply plugin: "com.android.library"
 apply plugin: "kotlin-android"
+apply plugin: "org.jetbrains.kotlin.plugin.compose"
 
 apply plugin: "com.facebook.react"
 
@@ -37,7 +44,13 @@ android {
   compileSdkVersion getExtOrDefault("compileSdkVersion")
 
   defaultConfig {
-    minSdkVersion getExtOrDefault("minSdkVersion")
+    // Never below 26: the WhiskrKit SDK's manifest requires it, regardless of
+    // what the consuming app's rootProject ext says.
+    minSdkVersion Math.max(26, getExtOrDefault("minSdkVersion") as int)
+  }
+
+  buildFeatures {
+    compose true
   }
 
   compileOptions {
@@ -48,4 +61,7 @@ android {
 
 dependencies {
   implementation "com.facebook.react:react-android"
+  // The native WhiskrKit SDK. Its Compose runtime/ui dependencies are `api`,
+  // which is what lets this module reference ComposeView and WhiskrKitHost.
+  implementation "eu.whiskrkit:whiskrkit-android:0.1.1"
 }
