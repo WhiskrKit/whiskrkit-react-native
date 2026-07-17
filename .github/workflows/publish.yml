@@ -1,0 +1,85 @@
+name: Publish
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  # Manual re-run (e.g. the registry hiccuped) — pick the tag as the ref in the UI.
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Lint files
+        run: yarn lint
+
+      - name: Typecheck files
+        run: yarn typecheck
+
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Run unit tests
+        run: yarn test --maxWorkers=2
+
+  publish:
+    needs: [lint, test]
+    runs-on: ubuntu-latest
+
+    # id-token: write lets npm attach build provenance (verifiable link from the
+    # published tarball back to this run) since npm CLI 9.5 / registry support.
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Verify tag matches package.json version
+        run: |
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          PKG_VERSION="$(node -p "require('./package.json').version")"
+          if [ "$TAG_VERSION" != "$PKG_VERSION" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME (version $TAG_VERSION) does not match package.json version $PKG_VERSION. Bump package.json and re-tag."
+            exit 1
+          fi
+
+      - name: Build package
+        run: yarn prepare
+
+      # A second setup-node call, scoped to this step only: it writes the
+      # registry auth config that `npm publish` reads from NODE_AUTH_TOKEN.
+      # Doesn't reinstall — deps are already restored by ./.github/actions/setup.
+      - name: Configure npm registry authentication
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version-file: .nvmrc
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Publish to npm
+        run: npm publish --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
