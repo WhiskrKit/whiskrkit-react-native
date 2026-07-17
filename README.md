@@ -41,7 +41,7 @@ plugin 'cocoapods-spm'
 target 'YourApp' do
   spm_pkg "WhiskrKit",
           :url => "https://github.com/whiskrkit/whiskrkit-swift.git",
-          :version => "0.1.9"
+          :version => "0.1.10"
   # ...
 end
 ```
