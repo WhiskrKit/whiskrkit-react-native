@@ -1,14 +1,31 @@
-# react-native-whiskrkit
+![WhiskrKit logo](https://whiskrkit.eu/WhiskrKit_logo.png)
+# WhiskrKit for React Native - The purr-fect feedback toolkit for modern apps.
 
-React Native wrapper for [WhiskrKit](https://whiskrkit.eu), the in-app survey
-SDK. Surveys render as fully native UI (toast, sheet, or fullscreen) presented
-by the native WhiskrKit SDKs — this package only triggers presentation, no
-survey UI lives in JavaScript.
+![version](https://img.shields.io/badge/version-0.1.1-blue) ![MIT](https://img.shields.io/badge/license-MIT-green)
 
-A thin bridge by design: it exposes exactly what the native SDKs expose. Like
-them, it is **fire-and-forget** — calls do not report outcomes, and failures
-are logged natively rather than surfaced to JavaScript (see
+WhiskrKit provides a flexible and easy-to-use API for presenting questionnaires and
+feedback forms in your React Native applications. This is the React Native wrapper for
+[WhiskrKit for iOS](https://whiskrkit.eu) and the [Android SDK](https://whiskrkit.eu);
+all three talk to the same backend and share the same survey templates.
+
+Surveys render as fully native UI (toast, sheet, or fullscreen) presented by the native
+WhiskrKit SDKs — this package only triggers presentation, no survey UI lives in
+JavaScript. It is a thin bridge by design: it exposes exactly what the native SDKs
+expose. Like them, it is **fire-and-forget** — calls do not report outcomes, and
+failures are logged natively rather than surfaced to JavaScript (see
 [Design notes](#design-notes)).
+
+## Features
+
+Surveys are rendered by the native WhiskrKit SDKs, so you get their full feature set
+from JavaScript:
+
+* **Multiple question types**: star ratings, thumbs up/down, NPS scales, free text, multiple choice
+* **Flexible presentation styles**: toasts (banners), sheets, full-screen forms
+* **Fully native UI**: SwiftUI on iOS, Jetpack Compose on Android — no JavaScript survey UI
+* **Backend-driven targeting**: session counts, time intervals, audience percentages, repeat policies
+* **Offline-safe**: failed submissions queue natively and retry when connectivity returns
+* **Accessibility first**: native VoiceOver and TalkBack support on every component
 
 ## Requirements
 
@@ -140,7 +157,7 @@ yarn example android
 
 ## License
 
-MIT
+WhiskrKit is available under the MIT license. See [LICENSE](LICENSE).
 
 ---
 
