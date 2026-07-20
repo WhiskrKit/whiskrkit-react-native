@@ -70,16 +70,17 @@ jobs:
       - name: Build package
         run: yarn prepare
 
-      # A second setup-node call, scoped to this step only: it writes the
-      # registry auth config that `npm publish` reads from NODE_AUTH_TOKEN.
-      # Doesn't reinstall — deps are already restored by ./.github/actions/setup.
-      - name: Configure npm registry authentication
+      # Points npm at the public registry. With Trusted Publishing (OIDC) no
+      # auth token is stored: the id-token: write permission above lets npm
+      # exchange a short-lived credential at publish time. Doesn't reinstall —
+      # deps are already restored by ./.github/actions/setup.
+      - name: Configure npm registry
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version-file: .nvmrc
           registry-url: 'https://registry.npmjs.org'
 
+      # Provenance is generated automatically under Trusted Publishing; the flag
+      # keeps it explicit. Requires npm >= 11.5.1 (Node 24 in .nvmrc ships it).
       - name: Publish to npm
         run: npm publish --provenance
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
