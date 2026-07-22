@@ -1,7 +1,7 @@
 ![WhiskrKit logo](https://whiskrkit.eu/WhiskrKit_logo.png)
 # WhiskrKit for React Native - The purr-fect feedback toolkit for modern apps.
 
-![version](https://img.shields.io/badge/version-0.1.2-blue) ![MIT](https://img.shields.io/badge/license-MIT-green)
+![version](https://img.shields.io/badge/version-0.1.3-blue) ![MIT](https://img.shields.io/badge/license-MIT-green)
 
 WhiskrKit provides a flexible and easy-to-use API for presenting questionnaires and
 feedback forms in your React Native applications. This is the React Native wrapper for
@@ -9,9 +9,9 @@ feedback forms in your React Native applications. This is the React Native wrapp
 all three talk to the same backend and share the same survey templates.
 
 Surveys render as fully native UI (toast, sheet, or fullscreen) presented by the native
-WhiskrKit SDKs — this package only triggers presentation, no survey UI lives in
+WhiskrKit SDKs. This package only triggers presentation, no survey UI lives in
 JavaScript. It is a thin bridge by design: it exposes exactly what the native SDKs
-expose. Like them, it is **fire-and-forget** — calls do not report outcomes, and
+expose. Like them, it is **fire-and-forget**: calls do not report outcomes, and
 failures are logged natively rather than surfaced to JavaScript (see
 [Design notes](#design-notes)).
 
@@ -22,7 +22,7 @@ from JavaScript:
 
 * **Multiple question types**: star ratings, thumbs up/down, NPS scales, free text, multiple choice
 * **Flexible presentation styles**: toasts (banners), sheets, full-screen forms
-* **Fully native UI**: SwiftUI on iOS, Jetpack Compose on Android — no JavaScript survey UI
+* **Fully native UI**: SwiftUI on iOS, Jetpack Compose on Android, with no JavaScript survey UI
 * **Backend-driven targeting**: session counts, time intervals, audience percentages, repeat policies
 * **Offline-safe**: failed submissions queue natively and retry when connectivity returns
 * **Accessibility first**: native VoiceOver and TalkBack support on every component
@@ -71,15 +71,20 @@ cd ios && pod install
 
 ### Android
 
-The `eu.whiskrkit:whiskrkit-android` dependency resolves from Maven Central —
+The `eu.whiskrkit:whiskrkit-android` dependency resolves from Maven Central with
 no extra setup. Just make sure your app's `minSdkVersion` is 26 or higher.
 
 ## Quick start
 
 ```tsx
-import { initialize, present, checkAndPresent } from 'react-native-whiskrkit';
+import {
+  initialize,
+  present,
+  checkAndPresent,
+  useWhiskrKitSurvey,
+} from 'react-native-whiskrkit';
 
-// Once, at startup — e.g. at the top of your root component's mount.
+// Once, at startup, e.g. at the top of your root component's mount.
 initialize('your-api-key');
 
 // Manual trigger (bypasses eligibility rules): a feedback button,
@@ -89,6 +94,17 @@ present('your-survey-id');
 // Backend-controlled targeting, your timing: checks eligibility rules
 // configured in the dashboard and presents only if the user qualifies.
 checkAndPresent('your-survey-id');
+```
+
+To present a survey automatically when a screen appears (the equivalent of
+SwiftUI's `.whiskrKitSurvey` modifier), call the `useWhiskrKitSurvey` hook
+inside that screen's component. It runs an eligibility check on mount:
+
+```tsx
+function FeedbackScreen() {
+  useWhiskrKitSurvey('your-survey-id');
+  return <YourScreen />;
+}
 ```
 
 During development you can use the SDK's built-in mock surveys without a
@@ -106,10 +122,12 @@ present('welcome-toast');
 | `initialize(apiKey, options?)` | `apiKey: string`, `options?: { withMockedSurveys?: boolean }` | `void` | iOS, Android |
 | `present(surveyId)` | `surveyId: string` | `void` | iOS, Android |
 | `checkAndPresent(surveyId)` | `surveyId: string` | `void` | iOS, Android |
+| `useWhiskrKitSurvey(surveyId)` | `surveyId: string` | `void` (React hook) | iOS, Android |
 
-All methods are synchronous and return nothing. `initialize` must be called
-before the other two; calls made without it are silent no-ops (logged
-natively).
+The three functions are synchronous and return nothing. `initialize` must be
+called before the others; calls made without it are silent no-ops (logged
+natively). `useWhiskrKitSurvey` is a React hook: call it inside a component to
+run an eligibility check for `surveyId` when that component mounts.
 
 ## Design notes
 
@@ -133,14 +151,14 @@ all touches through.
 
 ## Platform differences
 
-- **Presentation styles** — both platforms render toast (called *banner* in
+- **Presentation styles**: both platforms render toast (called *banner* in
   the Android SDK), sheet, and fullscreen surveys. The style comes from the
   survey's dashboard configuration, not from the caller.
-- **iPad placement (`SheetPlacement` / `ToastPlacement`)** — an iOS-only
+- **iPad placement (`SheetPlacement` / `ToastPlacement`)**: an iOS-only
   concept controlling where sheet panels and toasts sit on wide screens. The
   wrapper currently leaves the SDK defaults (`bottomCentered`, safe in any
   layout) in place; there is no Android equivalent.
-- **Trigger buffering** — on Android, a `present()` fired before the host
+- **Trigger buffering**: on Android, a `present()` fired before the host
   exists is buffered and delivered once it appears; on iOS it is a no-op.
   Calling `initialize` first (which attaches the host) makes this moot.
 

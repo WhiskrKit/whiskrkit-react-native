@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import Whiskrkit from './NativeWhiskrkit';
 
 /**
@@ -59,10 +60,30 @@ export function present(surveyId: string): void {
  *
  * Fire-and-forget: the call does not report the outcome of the eligibility
  * check. Not eligible, unknown survey ID, and network failure all look the
- * same from JavaScript — no survey appears.
+ * same from JavaScript: no survey appears.
  *
  * @param surveyId The identifier of the survey to evaluate and potentially present.
  */
 export function checkAndPresent(surveyId: string): void {
   Whiskrkit.checkAndPresent(surveyId);
+}
+
+/**
+ * Runs an eligibility check for `surveyId` when the component mounts,
+ * presenting the survey if the user qualifies. This is the hook form of the
+ * native automatic presentation (SwiftUI's `.whiskrKitSurvey` modifier,
+ * Jetpack Compose's `WhiskrKitSurvey`): drop it into a screen component and a
+ * survey appears on that screen, subject to the eligibility rules configured
+ * in the dashboard.
+ *
+ * Internally it calls {@link checkAndPresent} once per mount, and again if
+ * `surveyId` changes. WhiskrKit must be initialized first; see
+ * {@link initialize}.
+ *
+ * @param surveyId The identifier of the survey to evaluate and potentially present.
+ */
+export function useWhiskrKitSurvey(surveyId: string): void {
+  useEffect(() => {
+    checkAndPresent(surveyId);
+  }, [surveyId]);
 }
