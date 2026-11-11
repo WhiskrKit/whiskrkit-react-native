@@ -1,7 +1,7 @@
 ![WhiskrKit logo](https://whiskrkit.eu/WhiskrKit_logo.png)
 # WhiskrKit for React Native - The purr-fect feedback toolkit for modern apps.
 
-![version](https://img.shields.io/badge/version-0.1.3-blue) ![MIT](https://img.shields.io/badge/license-MIT-green)
+![version](https://img.shields.io/badge/version-0.2.0-blue) ![MIT](https://img.shields.io/badge/license-MIT-green)
 
 WhiskrKit provides a flexible and easy-to-use API for presenting questionnaires and
 feedback forms in your React Native applications. This is the React Native wrapper for
@@ -13,7 +13,8 @@ WhiskrKit SDKs. This package only triggers presentation, no survey UI lives in
 JavaScript. It is a thin bridge by design: it exposes exactly what the native SDKs
 expose. Like them, it is **fire-and-forget**: calls do not report outcomes, and
 failures are logged natively rather than surfaced to JavaScript (see
-[Design notes](#design-notes)).
+[Design notes](#design-notes)). The one event is `onSurveyCompleted`, which
+tells you when the user submits a survey.
 
 ## Features
 
@@ -58,7 +59,7 @@ plugin 'cocoapods-spm'
 target 'YourApp' do
   spm_pkg "WhiskrKit",
           :url => "https://github.com/whiskrkit/whiskrkit-swift.git",
-          :version => "0.1.10"
+          :version => "0.2.0"
   # ...
 end
 ```
@@ -123,21 +124,80 @@ present('welcome-toast');
 | `present(surveyId)` | `surveyId: string` | `void` | iOS, Android |
 | `checkAndPresent(surveyId)` | `surveyId: string` | `void` | iOS, Android |
 | `useWhiskrKitSurvey(surveyId)` | `surveyId: string` | `void` (React hook) | iOS, Android |
+| `setAttribute(key, value)` | `key: string`, `value: string \| number \| boolean \| null` | `void` | iOS, Android |
+| `setAttributes(attributes)` | `attributes: Record<string, string \| number \| boolean>` | `void` | iOS, Android |
+| `removeAttribute(key)` | `key: string` | `void` | iOS, Android |
+| `clearAttributes()` | — | `void` | iOS, Android |
+| `onSurveyCompleted(listener)` | `listener: (completion: SurveyCompletion) => void` | `Subscription` | iOS, Android |
+| `useSurveyCompleted(listener)` | `listener: (completion: SurveyCompletion) => void` | `void` (React hook) | iOS, Android |
 
-The three functions are synchronous and return nothing. `initialize` must be
-called before the others; calls made without it are silent no-ops (logged
+The functions are synchronous. `initialize` must be called before `present`
+and `checkAndPresent`; calls made without it are silent no-ops (logged
 natively). `useWhiskrKitSurvey` is a React hook: call it inside a component to
 run an eligibility check for `surveyId` when that component mounts.
+
+### Attributes
+
+Attach context about the current user or session to every survey response
+submitted afterwards, so you can filter results in the dashboard. Attributes
+live in memory only, so set them again at launch.
+
+```ts
+import { setAttribute, setAttributes, clearAttributes } from 'react-native-whiskrkit';
+
+setAttribute('plan', 'pro');
+setAttribute('sessions', 3);
+setAttributes({ tier: 'gold', beta: true }); // merges
+setAttribute('plan', null);                  // removes one
+clearAttributes();
+```
+
+Values are strings, finite numbers or booleans; anything else throws a
+`TypeError`. Limits: 20 attributes, keys of 1 to 64 characters, text values up
+to 256 characters; the native SDK trims the rest. Do not send personal data
+(emails, phone numbers, names, IBANs, card numbers): the server drops it.
+
+### Survey completion
+
+`onSurveyCompleted` calls your listener each time the user submits a survey,
+with the survey id and the submitted answers:
+
+```ts
+import { onSurveyCompleted } from 'react-native-whiskrkit';
+
+const subscription = onSurveyCompleted((completion) => {
+  analytics.log('survey_completed', completion.surveyId);
+  for (const answer of completion.answers) {
+    if (answer.value.type === 'score') {
+      console.log(answer.questionId, answer.value.score);
+    }
+  }
+});
+// later
+subscription.remove();
+```
+
+Inside a component, `useSurveyCompleted(listener)` does the same while the
+component is mounted.
+
+Each answer has a `questionId`, a `questionType` (`scaleRating`,
+`symbolRating`, `thumbsRating`, `textualSurvey` or `multipleChoice`) and a
+`value`: `{ type: 'score', score }`, `{ type: 'thumbs', isUp }`,
+`{ type: 'text', text }` or `{ type: 'choices', optionIds }`. Unanswered
+questions are left out. It fires as soon as the user submits, whether or not
+the response reaches the server (a failed submission is queued and retried
+natively), never when a survey is dismissed without submitting, and also with
+mocked surveys.
 
 ## Design notes
 
 **Fire-and-forget, silent failure.** The native WhiskrKit SDKs deliberately
-never surface errors or survey lifecycle events to the host app: the SDK
+never surface errors to the host app: the SDK
 keeps its own record of shown and completed surveys for eligibility and
 repeat-policy decisions, and failures (bad API key, unknown survey ID, no
-network) simply mean no survey appears. The wrapper mirrors that contract
-instead of inventing a richer one, so there are no promises to await, no
-event emitter, and no error codes. When debugging, watch the native logs:
+network) simply mean no survey appears. The wrapper mirrors that contract,
+so there are no promises to await and no error codes. The one event is
+`onSurveyCompleted`, which the native SDKs also expose. When debugging, watch the native logs:
 Console.app (subsystem `WhiskrKit`) on iOS, Logcat (tag `WhiskrKit`) on
 Android.
 
