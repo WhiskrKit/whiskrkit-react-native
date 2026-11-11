@@ -8,7 +8,13 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { initialize, present, checkAndPresent } from 'react-native-whiskrkit';
+import {
+  initialize,
+  present,
+  checkAndPresent,
+  setAttribute,
+  useSurveyCompleted,
+} from 'react-native-whiskrkit';
 
 /**
  * Manual test harness for the WhiskrKit wrapper.
@@ -44,10 +50,20 @@ export default function App() {
     setLog((current) => [`${time}  ${message}`, ...current]);
   }, []);
 
+  // The one event WhiskrKit reports: the user submitted a survey.
+  useSurveyCompleted((completion) => {
+    const answers = completion.answers
+      .map((answer) => `${answer.questionId}=${JSON.stringify(answer.value)}`)
+      .join(', ');
+    appendLog(`completed "${completion.surveyId}": ${answers || 'no answers'}`);
+  });
+
   const onInitialize = () => {
     initialize('example-api-key', { withMockedSurveys: true });
+    setAttribute('example', 'react-native');
     setInitialized(true);
     appendLog('initialize(withMockedSurveys: true)');
+    appendLog('setAttribute("example", "react-native")');
   };
 
   const onPresent = () => {
@@ -107,7 +123,7 @@ export default function App() {
       />
 
       <Text style={styles.sectionLabel}>
-        Action log (calls made, not SDK events — WhiskrKit reports no outcome)
+        Log (calls made, and completed surveys reported by WhiskrKit)
       </Text>
       <ScrollView style={styles.log}>
         {log.map((entry, index) => (
