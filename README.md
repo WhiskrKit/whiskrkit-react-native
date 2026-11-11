@@ -139,8 +139,9 @@ run an eligibility check for `surveyId` when that component mounts.
 ### Attributes
 
 Attach context about the current user or session to every survey response
-submitted afterwards, so you can filter results in the dashboard. Attributes
-live in memory only, so set them again at launch.
+submitted afterwards, such as the user's plan or an experiment variant. They're
+stored with each response; see [Attributes](https://whiskrkit.eu/docs/attributes/) for what to send and what
+not. Attributes live in memory only, so set them again at launch.
 
 ```ts
 import { setAttribute, setAttributes, clearAttributes } from 'react-native-whiskrkit';
@@ -155,7 +156,7 @@ clearAttributes();
 Values are strings, finite numbers or booleans; anything else throws a
 `TypeError`. Limits: 20 attributes, keys of 1 to 64 characters, text values up
 to 256 characters; the native SDK trims the rest. Do not send personal data
-(emails, phone numbers, names, IBANs, card numbers): the server drops it.
+(emails, phone numbers, names, IBANs, card numbers): the server drops it See [Privacy](https://whiskrkit.eu/docs/attributes/#privacy).
 
 ### Survey completion
 
