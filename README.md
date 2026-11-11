@@ -32,7 +32,7 @@ from JavaScript:
 
 - React Native 0.85+ with the New Architecture (this is a Turbo Module)
 - iOS 17+
-- Android minSdk 26+
+- Android minSdk 24+
 
 ## Installation
 
@@ -73,7 +73,7 @@ cd ios && pod install
 ### Android
 
 The `eu.whiskrkit:whiskrkit-android` dependency resolves from Maven Central with
-no extra setup. Just make sure your app's `minSdkVersion` is 26 or higher.
+no extra setup. Just make sure your app's `minSdkVersion` is 24 or higher.
 
 ## Quick start
 
