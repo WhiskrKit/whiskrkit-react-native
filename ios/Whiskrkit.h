@@ -1,5 +1,5 @@
 #import <WhiskrkitSpec/WhiskrkitSpec.h>
 
-@interface Whiskrkit : NSObject <NativeWhiskrkitSpec>
+@interface Whiskrkit : NativeWhiskrkitSpecBase <NativeWhiskrkitSpec>
 
 @end

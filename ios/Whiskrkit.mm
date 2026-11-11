@@ -3,6 +3,22 @@
 
 @implementation Whiskrkit
 
+- (instancetype)init
+{
+    if (self = [super init]) {
+        __weak Whiskrkit *weakSelf = self;
+        [WhiskrKitBridge setSurveyCompletedHandler:^(NSDictionary *completion) {
+            [weakSelf emitOnSurveyCompleted:completion];
+        }];
+    }
+    return self;
+}
+
+- (void)invalidate
+{
+    [WhiskrKitBridge setSurveyCompletedHandler:nil];
+}
+
 - (void)initialize:(NSString *)apiKey withMockedSurveys:(BOOL)withMockedSurveys {
     [WhiskrKitBridge initializeWithApiKey:apiKey withMockedSurveys:withMockedSurveys];
 }
@@ -13,6 +29,30 @@
 
 - (void)checkAndPresent:(NSString *)surveyId {
     [WhiskrKitBridge checkAndPresentWithSurveyId:surveyId];
+}
+
+- (void)setStringAttribute:(NSString *)key value:(NSString *)value {
+    [WhiskrKitBridge setStringAttributeWithKey:key value:value];
+}
+
+- (void)setNumberAttribute:(NSString *)key value:(double)value {
+    [WhiskrKitBridge setNumberAttributeWithKey:key value:value];
+}
+
+- (void)setBooleanAttribute:(NSString *)key value:(BOOL)value {
+    [WhiskrKitBridge setBooleanAttributeWithKey:key value:value];
+}
+
+- (void)setAttributes:(NSDictionary *)attributes {
+    [WhiskrKitBridge setAttributes:attributes];
+}
+
+- (void)removeAttribute:(NSString *)key {
+    [WhiskrKitBridge removeAttributeWithKey:key];
+}
+
+- (void)clearAttributes {
+    [WhiskrKitBridge clearAttributes];
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
