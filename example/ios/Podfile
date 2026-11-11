@@ -19,11 +19,11 @@ if linkage != nil
 end
 
 target 'WhiskrkitExample' do
-  # The WhiskrKit Swift package. 0.1.9 first carried the UIKit attach(to:) API
-  # this wrapper needs; 0.1.10 adds seen-survey tracking and impression events.
+  # The WhiskrKit Swift package. 0.2.0 adds the attributes and the
+  # onSurveyCompleted callback this wrapper bridges.
   spm_pkg "WhiskrKit",
           :url => "https://github.com/whiskrkit/whiskrkit-swift.git",
-          :version => "0.1.10"
+          :version => "0.2.0"
 
   config = use_native_modules!
 
