@@ -1,7 +1,7 @@
 ![WhiskrKit logo](https://whiskrkit.eu/WhiskrKit_logo.png)
 # WhiskrKit for React Native - The purr-fect feedback toolkit for modern apps.
 
-![version](https://img.shields.io/badge/version-0.2.0-blue) ![MIT](https://img.shields.io/badge/license-MIT-green)
+![version](https://img.shields.io/badge/version-0.3.0-blue) ![MIT](https://img.shields.io/badge/license-MIT-green)
 
 WhiskrKit provides a flexible and easy-to-use API for presenting questionnaires and
 feedback forms in your React Native applications. This is the React Native wrapper for
@@ -59,7 +59,7 @@ plugin 'cocoapods-spm'
 target 'YourApp' do
   spm_pkg "WhiskrKit",
           :url => "https://github.com/whiskrkit/whiskrkit-swift.git",
-          :version => "0.2.0"
+          :version => "0.3.0"
   # ...
 end
 ```

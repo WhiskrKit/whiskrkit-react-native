@@ -19,11 +19,11 @@ if linkage != nil
 end
 
 target 'WhiskrkitExample' do
-  # The WhiskrKit Swift package. 0.2.0 adds the attributes and the
-  # onSurveyCompleted callback this wrapper bridges.
+  # The WhiskrKit Swift package. 0.3.0 adds rating metrics; 0.2.0 added the
+  # attributes and the onSurveyCompleted callback this wrapper bridges.
   spm_pkg "WhiskrKit",
           :url => "https://github.com/whiskrkit/whiskrkit-swift.git",
-          :version => "0.2.0"
+          :version => "0.3.0"
 
   config = use_native_modules!
 
