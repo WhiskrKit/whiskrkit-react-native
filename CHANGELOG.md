@@ -9,7 +9,7 @@ Add a line under **Unreleased** in each pull request. When releasing, rename
 
 ## Unreleased
 
-## 0.3.0 (not yet released)
+## 0.3.0 - 2026-11-23
 
 Mirrors native SDK version 0.3.0. No changes to the JavaScript API.
 
