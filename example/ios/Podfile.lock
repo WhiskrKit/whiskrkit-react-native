@@ -1747,7 +1747,7 @@ PODS:
     - React-utils (= 0.85.0)
     - ReactNativeDependencies
   - ReactNativeDependencies (0.85.0)
-  - WhiskrkitReactNative (0.2.0):
+  - WhiskrkitReactNative (0.3.0):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2072,9 +2072,9 @@ SPEC CHECKSUMS:
   ReactCodegen: b3184a229afd01e7f8058dd81b805b843caa2bf9
   ReactCommon: fe2a3af8975e63efa60f95fca8c34dc85deee360
   ReactNativeDependencies: 5ca34934323bf679e8a9bd0f81c16d8f5709e57f
-  WhiskrkitReactNative: c6494d4178437c0f862d01a572b778e0defeab6d
+  WhiskrkitReactNative: 155e24ec9d0abadcf894779fe26684649e36ae7c
   Yoga: e83c3121d079541e69f3c5c623faaaf933fb5812
 
-PODFILE CHECKSUM: 9292d66d7459a6770f3aa78294e24ea4952baa7a
+PODFILE CHECKSUM: 514114fd56ef4eae1265c71a212c0ffc665d6b85
 
 COCOAPODS: 1.17.0
